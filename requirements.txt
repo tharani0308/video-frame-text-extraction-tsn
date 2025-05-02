@@ -1,0 +1,6 @@
+flask
+opencv-python
+pytesseract
+Pillow
+deep-translator
+gTTS
