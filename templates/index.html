@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Text Extraction</title>
+    <link rel="stylesheet" href="static/css/style.css">
+    <script>
+        function updateLanguageFields() {
+            document.getElementsByName('translateLang')[0].value = document.getElementById('translateSelect').value;
+            document.getElementsByName('audioLang')[0].value = document.getElementById('audioSelect').value;
+        }
+    </script>
+</head>
+<body>
+    <h1>Video Text Extraction and Translation</h1>
+    <form action="{{ url_for('process') }}" method="POST" enctype="multipart/form-data">
+        <label for="videoFile">Choose Video File:</label>
+        <input type="file" name="videoFile" required>
+
+        <label for="outputDir">Output Directory:</label>
+        <input type="text" name="outputDir" required>
+
+        <label for="frameInterval">Frame Interval (in seconds):</label>
+        <input type="number" name="frameInterval" required min="1">
+
+        <label for="translateLang">Select Translation Language:</label>
+        <select id="translateSelect" name="translateLang" required onchange="updateLanguageFields()">
+            {% for code, language in languages.items() %}
+                <option value="{{ code }}">{{ language }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="audioLang">Select Audio Language:</label>
+        <select id="audioSelect" name="audioLang" required onchange="updateLanguageFields()">
+            {% for code, language in languages.items() %}
+                <option value="{{ code }}">{{ language }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Upload and Process</button>
+    </form>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class="messages">
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    {% if audio_file %}
+        <h3>Translated Audio:</h3>
+        <audio controls>
+            <source src="{{ url_for('static', filename=audio_file) }}" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+    {% endif %}
+
+    {% if translated_text %}
+        <h3>Translated Text:</h3>
+        <p>{{ translated_text }}</p>
+    {% endif %}
+</body>
+</html>
